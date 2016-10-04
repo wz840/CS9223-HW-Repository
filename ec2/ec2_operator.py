@@ -43,12 +43,12 @@ for region in boto.ec2.regions():
 
         print "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s" % (region.name, name, inst.id, inst.instance_type, inst.launch_time, state, start_sched, stop_sched, inst.tags)
 
-        # queue up instances that have the start time falls between now and the next 30 minutes
-        if start_sched != None and state == "stopped" and time_to_action(start_sched, now, 31 * 60):
+        # queue up instances that have the start time falls between now and the next 10 minutes
+        if start_sched != None and state == "stopped" and time_to_action(start_sched, now, 11 * 60):
           start_list.append(inst.id)
 
-        # queue up instances that have the stop time falls between 30 minutes ago and now
-        if stop_sched != None and state == "running" and time_to_action(stop_sched, now, 31 * -60):
+        # queue up instances that have the stop time falls between 10 minutes ago and now
+        if stop_sched != None and state == "running" and time_to_action(stop_sched, now, 11 * -60):
           stop_list.append(inst.id)
 
     # start instances
