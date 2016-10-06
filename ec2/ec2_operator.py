@@ -3,6 +3,8 @@
 import boto.ec2
 import croniter
 import datetime
+import logging  
+import logging.handlers
 
 # return true if the cron schedule falls between now and now+seconds
 def time_to_action(sched, now, seconds):
@@ -22,6 +24,16 @@ def time_to_action(sched, now, seconds):
     ret = False
   print "time_to_action %s" % ret
   return ret
+
+LOG_FILE = 'ec2_status_logging.log'  
+handler = logging.handlers.RotatingFileHandler(LOG_FILE, maxBytes = 1024*1024, backupCount = 10) # instantiate handler   
+fmt = '%(asctime)s - %(message)s'    
+formatter = logging.Formatter(fmt)   	# instantiate format
+handler.setFormatter(formatter)      	# add formatter to the handler    
+logger = logging.getLogger('status')    # get logger named 'status'  
+logger.addHandler(handler)           	# add handler to logger  
+logger.setLevel(logging.INFO)  
+
 
 now = datetime.datetime.now()
 
@@ -54,13 +66,16 @@ for region in boto.ec2.regions():
     # start instances
     if len(start_list) > 0:
       ret = conn.start_instances(instance_ids=start_list, dry_run=False)
-      print "start_instances %s" % ret
+      logger.info('Instances %s started' % ret)
+      #print "start_instances %s" % ret
 
     # stop instances
     if len(stop_list) > 0:
       ret = conn.stop_instances(instance_ids=stop_list, dry_run=False)
-      print "stop_instances %s" % ret
+      logger.info('Instances %s stopped' % ret)
+      #print "stop_instances %s" % ret
 
   # most likely will get exception on new beta region and gov cloud
   except Exception as e:
     print 'Exception error in %s: %s' % (region.name, e.message)
+  
