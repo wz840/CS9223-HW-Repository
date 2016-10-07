@@ -25,7 +25,7 @@ def time_to_action(sched, now, seconds):
   print "time_to_action %s" % ret
   return ret
 
-LOG_FILE = 'ec2_status_logging.log'  
+LOG_FILE = '/home/ec2-user/ec2_status_logging.log'  
 handler = logging.handlers.RotatingFileHandler(LOG_FILE, maxBytes = 1024*1024, backupCount = 10) # instantiate handler   
 fmt = '%(asctime)s - %(message)s'    
 formatter = logging.Formatter(fmt)   	# instantiate format
