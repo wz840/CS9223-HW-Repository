@@ -1,5 +1,8 @@
 #!/usr/bin/python
 
+import boto
+import boto.s3
+import sys
 import boto.ec2
 import croniter
 import datetime
@@ -67,13 +70,19 @@ for region in boto.ec2.regions():
     if len(start_list) > 0:
       ret = conn.start_instances(instance_ids=start_list, dry_run=False)
       logger.info('Instances %s started' % ret)
-      #print "start_instances %s" % ret
-
+      
     # stop instances
     if len(stop_list) > 0:
       ret = conn.stop_instances(instance_ids=stop_list, dry_run=False)
       logger.info('Instances %s stopped' % ret)
-      #print "stop_instances %s" % ret
+    
+    # upload logging file to s3
+    conn=boto.s3.connect_to_region(region.name)
+    bucket = conn.get_bucket(sys.argv[1])
+    file = '/home/ec2-user/ec2_status_logging.log'
+    key = boto.s3.key.Key(bucket, file)
+    with oper(file) as f:
+      key.send_file(f)
 
   # most likely will get exception on new beta region and gov cloud
   except Exception as e:
