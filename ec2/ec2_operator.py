@@ -29,7 +29,7 @@ def time_to_action(sched, now, seconds):
   return ret
 
 LOG_FILE = '/home/ec2-user/ec2_status_logging.log'  
-handler = logging.handlers.FileHandler(LOG_FILE) # instantiate handler   
+handler = logging.FileHandler(LOG_FILE) # instantiate handler   
 fmt = '%(asctime)s - %(message)s'    
 formatter = logging.Formatter(fmt)   	# instantiate format
 handler.setFormatter(formatter)      	# add formatter to the handler    
