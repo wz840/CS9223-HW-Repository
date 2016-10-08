@@ -36,7 +36,8 @@ handler.setFormatter(formatter)      	# add formatter to the handler
 logger = logging.getLogger('status')    # get logger named 'status'  
 logger.addHandler(handler)           	# add handler to logger  
 logger.setLevel(logging.INFO)  
-
+bucketName = sys.argv[1]
+secretText = sys.argv[2]
 
 now = datetime.datetime.now()
 
@@ -69,7 +70,7 @@ for region in boto.ec2.regions():
     # start instances
     if len(start_list) > 0:
       ret = conn.start_instances(instance_ids=start_list, dry_run=False)
-      logger.info('Instances %s started' % ret)
+      logger.info('Instances %s started ---- secret text: %s' % (ret, secretText))
       
     # stop instances
     if len(stop_list) > 0:
@@ -78,7 +79,7 @@ for region in boto.ec2.regions():
     
     # upload logging file to s3
     conn=boto.s3.connect_to_region(region.name)
-    bucket = conn.get_bucket(sys.argv[1])
+    bucket = conn.get_bucket(bucketName)
     file = '/home/ec2-user/ec2_status_logging.log'
     key = boto.s3.key.Key(bucket, file)
     with open(file) as f:
